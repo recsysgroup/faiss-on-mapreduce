@@ -66,3 +66,5 @@ hadoop jar knn-tool-mr-0.0.1.jar com.knn.Driver /tmp/querys.txt /tmp/indexs.txt 
 # 感谢
 
 通过swig进行java-jni编译参考了 https://github.com/gameofdimension/jni-faiss
+
+搭建hadoop-hive环境所用的库 https://github.com/big-data-europe/docker-hive
