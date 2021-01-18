@@ -47,15 +47,18 @@ public class Driver {
             params.put(kv[0], kv[1]);
         }
 
-        job.getConfiguration().setInt("index_num",
-                Integer.parseInt(params.getOrDefault("index_num", "1")));
-        job.getConfiguration().setInt("search_num",
-                Integer.parseInt(params.getOrDefault("search_num", "1")));
+        int indexNum = Integer.parseInt(params.getOrDefault("index_num", "1"));
+        int searchNum = Integer.parseInt(params.getOrDefault("search_num", "1"));
+
+        job.getConfiguration().setInt("index_num", indexNum);
+        job.getConfiguration().setInt("search_num", searchNum);
         job.getConfiguration().setInt("dim",
                 Integer.parseInt(params.getOrDefault("dim", "64")));
         job.getConfiguration().setInt("topk",
                 Integer.parseInt(params.getOrDefault("topk", "5")));
         job.getConfiguration().set("dis_type", params.getOrDefault("dis_type", "l2"));
+
+        job.setNumReduceTasks(indexNum * searchNum);
 
         boolean success1 = job.waitForCompletion(true);
         if (!success1) {
