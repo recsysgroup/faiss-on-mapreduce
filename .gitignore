@@ -1,0 +1,7 @@
+.idea/
+*.ipr
+*.iws
+*.iml
+target/
+src/main/java/com/gameofdimension/faiss/swig/
+dependency-reduced-pom.xml
