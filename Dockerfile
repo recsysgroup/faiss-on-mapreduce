@@ -24,4 +24,4 @@ WORKDIR /opt/jni-faiss
 
 RUN mvn clean install -pl cpu -am
 
-RUN mvn clean package -pl knn-tool -am
+RUN mvn clean package -pl knn-tool-mr -am

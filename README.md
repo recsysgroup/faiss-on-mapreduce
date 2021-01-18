@@ -15,11 +15,45 @@
 
 通过MapReduce，将索引和查询的数据都进行分片，减少数据量到单机运行时间可接受的规模，调用faiss进行K进行查询，然后再对多个partition进行topk归并。
 
+在Reducer上单机knn检索采用了faiss库，faiss通过java-jni调用。
 
-## cpu
+# start
 
-- git clone https://github.com/gameofdimension/jni-faiss.git && cd jni-faiss && git submodule update --init
+```
+git clone git@github.com:qqhard/knn_tool.git 
+cd knn_tool
+git submodule init && git submodule update
 
-- docker build -t jni-faiss .
+docker build -t knn-tool .
+docker run -it knn-tool java -cp knn-tool-mr/target/knn-tool-mr-0.0.1.jar com.gameofdimension.faiss.tutorial.OneFlat
+```
 
-- docker run -it jni-faiss java -cp cpu-demo/target/cpu-demo-0.0.1.jar com.gameofdimension.faiss.tutorial.OneFlat
+网络环境不好的话，`docker build`多试几次，最后一句执行成功不报错说明faiss-jni得到了编译和调用成功了
+
+```
+mkdir target
+docker run -v `pwd`/target:/tmp/knn-tool-mr/target -it knn-tool cp /opt/jni-faiss/knn-tool-mr/target/knn-tool-mr-0.0.1.jar /tmp/knn-tool-mr/target/
+ls target
+```
+执行之后，target目录下就得到了knn-tool-mr-0.0.1.jar，这是可以直接拿到hadoop上用的
+
+`src/main/java/com/gameofdimension/faiss/swig/`下的代码和`/cpu/src/main/resources/_swigfaiss.so`的资源文件是为了方便使用IDE编码，从docker里拉出来的，然后其实在mac环境上，也可以用maven打包了，一样可以执行
+
+需要准备向量文件，格式为
+
+```
+key,0.1:0.2:0.3
+```
+
+执行mr任务
+
+```
+hadoop jar knn-tool-mr-0.0.1.jar com.knn.Driver /tmp/querys.txt /tmp/indexs.txt /tmp/out.txt index_num=8,search_num=8,dim=64,topk=10,dis_type=l2
+```
+
+# 参数
+
+
+# 感谢
+
+通过swig进行java-jni编译参考了 https://github.com/gameofdimension/jni-faiss
