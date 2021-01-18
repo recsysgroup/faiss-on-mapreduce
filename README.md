@@ -47,7 +47,7 @@ ls target
 key,0.1:0.2:0.3
 ```
 
-执行mr任务
+执行mr任务，参数依次为query向量，索引向量，查询结果，选项
 
 ```
 hadoop jar knn-tool-mr-0.0.1.jar com.knn.Driver /tmp/querys.txt /tmp/indexs.txt /tmp/out.txt index_num=8,search_num=8,dim=64,topk=10,dis_type=l2
@@ -55,6 +55,13 @@ hadoop jar knn-tool-mr-0.0.1.jar com.knn.Driver /tmp/querys.txt /tmp/indexs.txt 
 
 # 参数
 
+|参数|说明|
+|---|---|
+|index_num|索引分片数，根据索引数量设置，保证切分后，单机索引大小满足精度与用时|
+|search_num|查询分片数|
+|dim|向量维度|
+|topk|查询数量|
+|dis_type|距离类型，仅支持l2和ip，分别为欧式距离和内积距离，余弦距离参考faiss的文档|
 
 # 感谢
 
