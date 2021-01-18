@@ -19,6 +19,8 @@
 
 # start
 
+网络环境不好的话，`docker build`多试几次，最后一句执行成功不报错说明faiss-jni得到了编译和调用成功了
+
 ```
 git clone git@github.com:qqhard/knn_tool.git 
 cd knn_tool
@@ -28,18 +30,18 @@ docker build -t knn-tool .
 docker run -it knn-tool java -cp knn-tool-mr/target/knn-tool-mr-0.0.1.jar com.gameofdimension.faiss.tutorial.OneFlat
 ```
 
-网络环境不好的话，`docker build`多试几次，最后一句执行成功不报错说明faiss-jni得到了编译和调用成功了
+执行之后，target目录下就得到了knn-tool-mr-0.0.1.jar，这是可以直接拿到hadoop上用的
 
 ```
 mkdir target
 docker run -v `pwd`/target:/tmp/knn-tool-mr/target -it knn-tool cp /opt/jni-faiss/knn-tool-mr/target/knn-tool-mr-0.0.1.jar /tmp/knn-tool-mr/target/
 ls target
 ```
-执行之后，target目录下就得到了knn-tool-mr-0.0.1.jar，这是可以直接拿到hadoop上用的
 
 `src/main/java/com/gameofdimension/faiss/swig/`下的代码和`/cpu/src/main/resources/_swigfaiss.so`的资源文件是为了方便使用IDE编码，从docker里拉出来的，然后其实在mac环境上，也可以用maven打包了，一样可以执行
 
-需要准备向量文件，格式为
+
+准备向量文件，格式为
 
 ```
 key,0.1:0.2:0.3
