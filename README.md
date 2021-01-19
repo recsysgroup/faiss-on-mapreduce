@@ -11,7 +11,7 @@
 
 # 原理
 
-![原理图](https://app.yinxiang.com/FileSharing.action?hash=1/43c6d7fe41ace5885c95e7f4bcd993b8-139942)
+![原理图](https://pic4.zhimg.com/v2-4508af8c93690cda4a061f0937f978d7_r.jpg)
 
 通过MapReduce，将索引和查询的数据都进行分片，减少数据量到单机运行时间可接受的规模，调用faiss进行K进行查询，然后再对多个partition进行topk归并。
 
