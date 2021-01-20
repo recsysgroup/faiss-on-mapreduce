@@ -11,7 +11,7 @@
 
 # 原理
 
-![原理图](https://github.com/qqhard/knn_tool/blob/master/image1.png?raw=true)
+![原理图](https://app.yinxiang.com/FileSharing.action?hash=1/b2256898e3582fd1a00a48dda8ec172a-367230)
 
 通过MapReduce，将索引和查询的数据都进行分片，减少数据量到单机运行时间可接受的规模，调用faiss进行K进行查询，然后再对多个partition进行topk归并。
 
@@ -50,7 +50,18 @@ key,0.1:0.2:0.3
 执行mr任务，参数依次为query向量，索引向量，查询结果，选项
 
 ```
-hadoop jar knn-tool-mr-0.0.1.jar com.knn.Driver /tmp/querys.txt /tmp/indexs.txt /tmp/out.txt index_num=8,search_num=8,dim=64,topk=10,dis_type=l2
+hadoop jar knn-tool-mr-0.0.1.jar com.knn.KnnDriver /tmp/querys.txt /tmp/indexs.txt /tmp/out.txt index_num=8,search_num=8,dim=64,topk=10,dis_type=l2
+```
+
+同组内查询，格式为
+```
+group,key,0.1:0.2:0.3
+```
+
+执行
+
+```
+hadoop jar knn-tool-mr-0.0.1.jar com.knn.KnnInGroupDriver /tmp/querys_in_group.txt /tmp/indexs_in_group.txt /tmp/out.txt index_num=8,search_num=8,dim=64,topk=10,dis_type=l2
 ```
 
 # 参数

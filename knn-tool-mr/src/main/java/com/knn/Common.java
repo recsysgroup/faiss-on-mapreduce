@@ -3,72 +3,16 @@ package com.knn;
 import com.gameofdimension.faiss.swig.*;
 import com.gameofdimension.faiss.utils.JniFaissInitializer;
 import com.google.common.base.Preconditions;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
 
 import static com.gameofdimension.faiss.utils.IndexHelper.makeFloatArray;
-import static com.gameofdimension.faiss.utils.IndexHelper.show;
 
-public class KnnDistributedSearch {
-    private static Logger LOG = Logger.getLogger(KnnDistributedSearch.class.getName());
-
-    public static class QueryMapper extends Mapper<LongWritable, Text, Text, Text> {
-        private int queryNum = 1;
-        private int searchNum = 1;
-        private Random random = new Random();
-
-        protected void setup(Mapper<LongWritable, Text, Text, Text>.Context context) throws IOException, InterruptedException {
-            queryNum = context.getConfiguration().getInt("query_num", 1);
-            searchNum = context.getConfiguration().getInt("search_num", 1);
-
-        }
-
-        @Override
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            int queryId = random.nextInt(queryNum);
-
-            Text newValue = new Text("0," + value.toString());
-
-            for (int searchId = 0; searchId < searchNum; searchId++) {
-                context.write(new Text(queryId + "_" + searchId), newValue);
-            }
-
-        }
-    }
-
-    public static class SearchMapper extends Mapper<LongWritable, Text, Text, Text> {
-        private int queryNum = 1;
-        private int searchNum = 1;
-        private Random random = new Random();
-
-        protected void setup(Mapper<LongWritable, Text, Text, Text>.Context context) throws IOException, InterruptedException {
-            queryNum = context.getConfiguration().getInt("query_num", 1);
-            searchNum = context.getConfiguration().getInt("search_num", 1);
-
-        }
-
-        @Override
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            int searchId = random.nextInt(searchNum);
-
-            Text newValue = new Text("1," + value.toString());
-
-            for (int queryId = 0; queryId < queryNum; queryId++) {
-                context.write(new Text(queryId + "_" + searchId), newValue);
-            }
-
-        }
-    }
-
+public class Common {
     public static class Item {
         int type;
         String key;
@@ -125,6 +69,14 @@ public class KnnDistributedSearch {
                 throw e;
             }
 
+            if (querys.isEmpty() || indexs.isEmpty()) {
+                return;
+            }
+
+            if (topk > indexs.size()) {
+                topk = indexs.size();
+            }
+
             float[][] xbArray = new float[indexs.size()][];
             for (int index = 0; index < indexs.size(); index++) {
                 xbArray[index] = indexs.get(index).vec;
@@ -133,7 +85,7 @@ public class KnnDistributedSearch {
 
             IndexFlatL2 quantizer = new IndexFlatL2(dim);
             IndexIVFFlat faissIndex;
-            if ("l2".equals(disType)){
+            if ("l2".equals(disType)) {
                 faissIndex = new IndexIVFFlat(quantizer, dim, 100, MetricType.METRIC_L2);
             } else {
                 faissIndex = new IndexIVFFlat(quantizer, dim, 100, MetricType.METRIC_INNER_PRODUCT);
@@ -167,5 +119,4 @@ public class KnnDistributedSearch {
             }
         }
     }
-
 }

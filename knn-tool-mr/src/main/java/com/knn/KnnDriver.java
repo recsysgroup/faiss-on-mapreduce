@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class Driver {
-    private static Logger LOG = Logger.getLogger(Driver.class.getName());
+public class KnnDriver {
+    private static Logger LOG = Logger.getLogger(KnnDriver.class.getName());
 
     public static void main(String[] args) throws Exception {
         // instantiate a configuration
@@ -26,17 +26,16 @@ public class Driver {
         Job job = Job.getInstance(configuration, "search");
 
         // set job parameters
-        job.setJarByClass(KnnDistributedSearch.class);
-        job.setMapperClass(KnnDistributedSearch.QueryMapper.class);
-        job.setReducerClass(KnnDistributedSearch.SearchReducer.class);
+        job.setJarByClass(KnnSearch.class);
+        job.setReducerClass(Common.SearchReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
         String midOutDir = "/tmp/knn_task/" + UUID.randomUUID().toString();
         LOG.info(String.format("midOutDir is %s", midOutDir));
 
-        MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, KnnDistributedSearch.QueryMapper.class);
-        MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, KnnDistributedSearch.SearchMapper.class);
+        MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, KnnSearch.QueryMapper.class);
+        MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, KnnSearch.SearchMapper.class);
         // set io paths
 
         FileOutputFormat.setOutputPath(job, new Path(midOutDir));
